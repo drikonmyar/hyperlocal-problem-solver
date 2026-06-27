@@ -1,0 +1,6 @@
+{
+  "name": "Community Hero",
+  "description": "Hyperlocal problem solver platform for reporting, tracking, verifying, and resolving community issues with AI-powered categorization and predictive insights.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
