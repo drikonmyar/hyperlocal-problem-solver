@@ -21,6 +21,7 @@ import {
   Trash2,
   Building,
   HelpCircle,
+  Route,
 } from "lucide-react";
 
 interface IssueCardProps {
@@ -244,9 +245,22 @@ export default function IssueCard({
             {getStatusBadge(issue.status)}
           </div>
 
-          <div className="flex items-center gap-1 text-xs text-slate-500 mt-1.5 font-medium">
-            <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-            <span className="truncate">{issue.location.address}</span>
+          <div className="flex items-center gap-2 text-xs text-slate-500 mt-1.5 font-medium">
+            <span className="min-w-0 flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <span className="truncate">{issue.location.address}</span>
+            </span>
+            {onShowRoute && (
+              <button
+                type="button"
+                onClick={() => onShowRoute(issue.id)}
+                className="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold text-indigo-700 transition-colors hover:text-indigo-900 hover:underline"
+                title="Show route"
+              >
+                <Route className="w-3.5 h-3.5" />
+                <span>Show route</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -412,18 +426,6 @@ export default function IssueCard({
                 <span>{alreadyVerified ? "Audited ✓" : "Verify Audit"}</span>
               </button>
             )}
-
-          {/* SHOW ROUTE BUTTON */}
-          {onShowRoute && (
-            <button
-              onClick={() => onShowRoute(issue.id)}
-              className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-colors border bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-indigo-600"
-              title="Show Route"
-            >
-              <MapPin className="w-3.5 h-3.5" />
-              <span>Route</span>
-            </button>
-          )}
 
           {/* IN PROGRESS BUTTON (Mock role action for demo simulation) */}
           {issue.status !== "In Progress" &&

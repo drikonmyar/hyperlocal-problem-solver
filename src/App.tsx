@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "leaflet/dist/leaflet.css";
 import {
   Issue,
@@ -78,35 +78,49 @@ export default function App() {
     lat: number;
     lng: number;
   } | null>(null);
+  const [currentLocation, setCurrentLocation] =
+    useState<LocationCoordinates | null>(null);
   const [hasGeo, setHasGeo] = useState<boolean | null>(null);
   const [routeData, setRouteData] = useState<
     { lat: number; lng: number }[] | null
   >(null);
 
-  useEffect(() => {
-    let isMounted = true;
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          if (isMounted) {
-            setMapCenter({
+  const locateCurrentUser = useCallback(
+    () =>
+      new Promise<LocationCoordinates | null>((resolve) => {
+        if (!navigator.geolocation) {
+          setHasGeo(false);
+          resolve(null);
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const userCoords = {
               lat: position.coords.latitude,
               lng: position.coords.longitude,
+              address: `GPS Location (${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)})`,
+            };
+            setCurrentLocation(userCoords);
+            setMapCenter({
+              lat: userCoords.lat,
+              lng: userCoords.lng,
             });
             setHasGeo(true);
-          }
-        },
-        () => {
-          if (isMounted) setHasGeo(false);
-        },
-      );
-    } else {
-      setHasGeo(false);
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+            resolve(userCoords);
+          },
+          () => {
+            setHasGeo(false);
+            resolve(null);
+          },
+        );
+      }),
+    [],
+  );
+
+  useEffect(() => {
+    void locateCurrentUser();
+  }, [locateCurrentUser]);
 
   useEffect(() => {
     if (hasGeo === false && issues.length > 0) {
@@ -528,6 +542,8 @@ export default function App() {
     saveState(updatedIssues, updatedCitizens, updatedUser);
     setMapPinnedCoords(null);
     setSelectedIssueId(newIssue.id); // View the new issue
+    setMapCenter({ lat: newIssue.location.lat, lng: newIssue.location.lng });
+    setRouteData(null);
     setActiveTab("dashboard"); // Go back to Map
   };
 
@@ -537,15 +553,11 @@ export default function App() {
     const issue = issues.find((i) => i.id === issueId);
     if (!issue) return;
 
-    if (!mapCenter) {
-      setRouteData([MAP_CENTER, issue.location]);
-      setActiveTab("dashboard");
-      return;
-    }
+    const routeStart = currentLocation ?? MAP_CENTER;
 
     try {
       const res = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${mapCenter.lng},${mapCenter.lat};${issue.location.lng},${issue.location.lat}?overview=full&geometries=geojson`,
+        `https://router.project-osrm.org/route/v1/driving/${routeStart.lng},${routeStart.lat};${issue.location.lng},${issue.location.lat}?overview=full&geometries=geojson`,
       );
       const data = await res.json();
       if (data.routes && data.routes.length > 0) {
@@ -557,11 +569,11 @@ export default function App() {
         );
         setRouteData(coords);
       } else {
-        setRouteData([mapCenter, issue.location]);
+        setRouteData([routeStart, issue.location]);
       }
     } catch (e) {
       console.error("Failed to fetch route:", e);
-      setRouteData([mapCenter, issue.location]);
+      setRouteData([routeStart, issue.location]);
     }
     setActiveTab("dashboard");
   };
@@ -583,6 +595,15 @@ export default function App() {
   });
 
   const selectedIssue = issues.find((i) => i.id === selectedIssueId);
+
+  const handleInspectIssue = (issue: Issue) => {
+    setSelectedIssueId(issue.id);
+    setMapCenter({
+      lat: issue.location.lat,
+      lng: issue.location.lng,
+    });
+    setRouteData(null);
+  };
 
   const handleLogin = (citizen: Citizen) => {
     setCurrentUser(citizen);
@@ -864,9 +885,11 @@ export default function App() {
                     selectedCategory={categoryFilter}
                     selectedStatus={statusFilter}
                     centerLocation={mapCenter}
+                    currentLocation={currentLocation}
+                    onLocateCurrent={locateCurrentUser}
                     routeData={routeData}
                     onSelectIssue={(issue) => {
-                      setSelectedIssueId(issue.id);
+                      handleInspectIssue(issue);
                       // Scroll to right detail card smoothly
                       document
                         .getElementById("incident-inspection-feed")
@@ -1011,7 +1034,7 @@ export default function App() {
                           {filteredIssuesList.map((issue) => (
                             <div
                               key={issue.id}
-                              onClick={() => setSelectedIssueId(issue.id)}
+                              onClick={() => handleInspectIssue(issue)}
                               className="bg-white p-3 rounded-xl border border-slate-100 hover:border-indigo-100 shadow-sm hover:shadow transition-all cursor-pointer flex flex-col gap-2"
                               id={`feed-item-${issue.id}`}
                             >
@@ -1146,6 +1169,8 @@ export default function App() {
                       selectedCategory="All"
                       selectedStatus="All"
                       centerLocation={mapCenter}
+                      currentLocation={currentLocation}
+                      onLocateCurrent={locateCurrentUser}
                       onSelectIssue={() => {}}
                       interactiveMode={true}
                       onSelectLocation={(coords) => setMapPinnedCoords(coords)}

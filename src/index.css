@@ -16,3 +16,112 @@
   animation: spin-slow 20s linear infinite;
 }
 
+.current-location-marker {
+  align-items: center;
+  display: flex;
+  height: 28px;
+  justify-content: center;
+  position: relative;
+  width: 28px;
+}
+
+.current-location-dot {
+  background: #2563eb;
+  border: 3px solid #ffffff;
+  border-radius: 9999px;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+  display: block;
+  height: 22px;
+  position: relative;
+  width: 22px;
+}
+
+.current-location-dot::after {
+  background: #ffffff;
+  border-radius: 9999px;
+  content: "";
+  height: 8px;
+  left: 4px;
+  position: absolute;
+  top: 4px;
+  width: 8px;
+}
+
+.current-location-label {
+  background: #111827;
+  border-radius: 9999px;
+  bottom: 34px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.22);
+  color: #ffffff;
+  font: 700 12px/1.1 Inter, ui-sans-serif, system-ui, sans-serif;
+  left: 50%;
+  opacity: 0;
+  padding: 6px 10px;
+  pointer-events: none;
+  position: absolute;
+  transform: translate(-50%, 4px);
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+  white-space: nowrap;
+}
+
+.current-location-label::after {
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 8px solid #111827;
+  content: "";
+  left: 50%;
+  position: absolute;
+  top: 100%;
+  transform: translateX(-50%);
+}
+
+.current-location-marker:hover .current-location-label {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.leaflet-control-locate {
+  align-items: center;
+  background: #ffffff;
+  border: 0;
+  border-radius: 4px;
+  box-sizing: content-box;
+  color: #1f2937;
+  cursor: pointer;
+  display: flex;
+  height: 26px;
+  justify-content: center;
+  line-height: 26px;
+  padding: 0;
+  text-align: center;
+  width: 26px;
+}
+
+.leaflet-control-locate:hover,
+.leaflet-control-locate:focus-visible {
+  background: #f8fafc;
+  color: #2563eb;
+}
+
+.leaflet-control-locate svg {
+  fill: none;
+  height: 18px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  width: 18px;
+}
+
+.leaflet-control-locate.is-locating svg {
+  animation: spin-slow 1s linear infinite;
+}
+
+.leaflet-touch .leaflet-control-locate {
+  border-radius: 2px;
+  height: 30px;
+  line-height: 30px;
+  width: 30px;
+}

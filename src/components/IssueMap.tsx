@@ -30,7 +30,9 @@ interface IssueMapProps {
   interactiveMode?: boolean;
   onSelectLocation?: (coords: LocationCoordinates) => void;
   pinnedLocation?: LocationCoordinates | null;
-  centerLocation?: LocationCoordinates | null;
+  centerLocation?: Pick<LocationCoordinates, "lat" | "lng"> | null;
+  currentLocation?: LocationCoordinates | null;
+  onLocateCurrent?: () => Promise<LocationCoordinates | null>;
   routeData?: { lat: number; lng: number }[] | null;
 }
 
@@ -84,6 +86,77 @@ const pinnedIcon = L.divIcon({
   iconAnchor: [10, 20],
 });
 
+const currentLocationIcon = L.divIcon({
+  html: `
+    <div class="current-location-marker">
+      <span class="current-location-label">You are here</span>
+      <span class="current-location-dot"></span>
+    </div>
+  `,
+  className: "",
+  iconSize: [28, 28],
+  iconAnchor: [14, 14],
+});
+
+function LocateControl({
+  currentLocation,
+  onLocateCurrent,
+}: {
+  currentLocation?: LocationCoordinates | null;
+  onLocateCurrent?: () => Promise<LocationCoordinates | null>;
+}) {
+  const map = useMap();
+
+  React.useEffect(() => {
+    const Control = L.Control.extend({
+      onAdd() {
+        const button = L.DomUtil.create(
+          "button",
+          "leaflet-bar leaflet-control leaflet-control-locate",
+        );
+        button.type = "button";
+        button.title = "Locate me";
+        button.setAttribute("aria-label", "Locate me");
+        button.innerHTML = `
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+            <circle cx="12" cy="12" r="6" />
+            <circle cx="12" cy="12" r="2" />
+          </svg>
+        `;
+
+        L.DomEvent.disableClickPropagation(button);
+        L.DomEvent.on(button, "click", async (event) => {
+          L.DomEvent.preventDefault(event);
+          button.classList.add("is-locating");
+
+          try {
+            const nextLocation = onLocateCurrent
+              ? await onLocateCurrent()
+              : currentLocation;
+            if (nextLocation) {
+              map.setView([nextLocation.lat, nextLocation.lng], 17);
+            }
+          } finally {
+            button.classList.remove("is-locating");
+          }
+        });
+
+        return button;
+      },
+    });
+
+    const control = new Control({ position: "topleft" });
+    control.addTo(map);
+
+    return () => {
+      control.remove();
+    };
+  }, [currentLocation, map, onLocateCurrent]);
+
+  return null;
+}
+
 function UpdateCenter({
   centerLat,
   centerLng,
@@ -115,6 +188,8 @@ export default function IssueMap({
   onSelectLocation,
   pinnedLocation,
   centerLocation,
+  currentLocation,
+  onLocateCurrent,
   routeData,
 }: IssueMapProps) {
   // Filter issues
@@ -182,6 +257,10 @@ export default function IssueMap({
           centerLng={centerLng}
           routeData={routeData}
         />
+        <LocateControl
+          currentLocation={currentLocation}
+          onLocateCurrent={onLocateCurrent}
+        />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -237,6 +316,14 @@ export default function IssueMap({
           <Marker
             position={[pinnedLocation.lat, pinnedLocation.lng]}
             icon={pinnedIcon}
+          />
+        )}
+
+        {currentLocation && (
+          <Marker
+            position={[currentLocation.lat, currentLocation.lng]}
+            icon={currentLocationIcon}
+            zIndexOffset={1000}
           />
         )}
 
