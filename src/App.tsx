@@ -1225,7 +1225,7 @@ export default function App() {
         </p>
         <p className="mt-1 flex items-center justify-center gap-1 text-[10px]">
           Powered by{" "}
-          <span className="font-bold text-indigo-600">Gemini 3.5 Flash</span>{" "}
+          <span className="font-bold text-indigo-600">Gemini 2.5 Flash</span>{" "}
           and <span className="font-bold text-indigo-600">React + Express</span>
         </p>
       </footer>
