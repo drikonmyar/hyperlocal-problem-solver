@@ -682,10 +682,10 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-sm font-extrabold text-slate-800 tracking-tight font-display uppercase leading-none">
-                Community Hero
+                Civic Connect
               </h1>
               <span className="text-[10px] text-indigo-600 font-mono font-bold uppercase tracking-wider block mt-0.5">
-                District 10 Solver
+                AI-Powered Community Issue Reporting & Resolution
               </span>
             </div>
           </div>
@@ -874,7 +874,7 @@ export default function App() {
                   <div className="flex items-center justify-between">
                     <h2 className="text-sm font-bold text-slate-700 tracking-tight uppercase tracking-wider font-mono flex items-center gap-1.5">
                       <Map className="w-4 h-4 text-indigo-600" />
-                      hyperlocal district 10 map
+                      hyperlocal map
                     </h2>
 
                     <span className="text-[10px] text-slate-400 font-mono">
@@ -1212,7 +1212,7 @@ export default function App() {
       {/* 3. FOOTER */}
       <footer className="bg-white border-t border-slate-100 py-6 text-center text-xs text-slate-400 mt-10 shrink-0 font-light leading-relaxed">
         <p>
-          Community Hero • Hyperlocal Problem Solver Platform • Developed on AI
+          Civic Connect • Hyperlocal Problem Solver Platform • Developed on AI
           Studio
         </p>
         <p className="mt-1 flex items-center justify-center gap-1 text-[10px]">
