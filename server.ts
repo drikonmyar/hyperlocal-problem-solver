@@ -16,6 +16,7 @@ let aiClient: GoogleGenAI | null = null;
 function getGeminiClient(): GoogleGenAI | null {
   if (!aiClient) {
     const apiKey = process.env.GEMINI_API_KEY;
+    console.log("GEMINI_API_KEY:", apiKey);
     if (!apiKey || apiKey === "MY_GEMINI_API_KEY") {
       console.warn(
         "GEMINI_API_KEY not configured or using placeholder. Running in simulated fallback mode.",
@@ -173,7 +174,7 @@ Respond with valid JSON containing:
     if (imageBase64) {
       let mimeType = "image/jpeg";
       let base64Data = imageBase64;
-      
+
       if (imageBase64.includes(",")) {
         const matches = imageBase64.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+);base64,(.+)$/);
         if (matches) {

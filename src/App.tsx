@@ -42,6 +42,7 @@ import {
   Layers,
   Search,
   BookOpen,
+  Users,
 } from "lucide-react";
 
 const GUEST_USER: Citizen = {
@@ -607,6 +608,15 @@ export default function App() {
     setRouteData(null);
   };
 
+  const handleInspectIssueFromHotspot = (issue: Issue) => {
+    handleInspectIssue(issue);
+    window.setTimeout(() => {
+      document
+        .getElementById("incident-inspection-feed")
+        ?.scrollIntoView({ behavior: "smooth" });
+    }, 0);
+  };
+
   const handleLogin = (citizen: Citizen) => {
     setCurrentUser(citizen);
     localStorage.setItem(
@@ -655,6 +665,75 @@ export default function App() {
   };
 
   const isGuest = currentUser?.id === "guest";
+  const civicIncidentFilters = (
+    <div className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex flex-col gap-3">
+      <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
+        Filter Civic Incidents
+      </h3>
+
+      <div className="relative">
+        <Search className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-slate-400" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search potholes, streets, tags..."
+          className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          id="search-input-box"
+        />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery("")}
+            className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600"
+          >
+            <X className="w-3 h-3" />
+          </button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <div className="flex flex-col gap-1">
+          <span className="text-[9px] font-bold text-slate-400 uppercase font-mono">
+            Category
+          </span>
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="px-2 py-1 text-xs bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium"
+            id="category-filter-select"
+          >
+            <option value="All">All Categories</option>
+            <option value="Pothole">Potholes</option>
+            <option value="Water Leakage">Water Leakages</option>
+            <option value="Damaged Streetlight">Streetlights</option>
+            <option value="Waste Management">Waste Management</option>
+            <option value="Public Infrastructure">Infrastructure</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <span className="text-[9px] font-bold text-slate-400 uppercase font-mono">
+            Civic Status
+          </span>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-2 py-1 text-xs bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium"
+            id="status-filter-select"
+          >
+            <option value="All">All Statuses</option>
+            <option value="Reported">Reported</option>
+            <option value="Verified">Verified</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Unsure">Unsure</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  );
 
   if (showLogin) {
     return (
@@ -677,8 +756,8 @@ export default function App() {
             className="flex items-center gap-2.5 cursor-pointer"
             onClick={() => setActiveTab("dashboard")}
           >
-            <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-100">
-              <Sparkles className="w-5 h-5" />
+            <div className="w-9 h-9 flex items-center justify-center text-blue-600">
+              <Users className="w-8 h-8" />
             </div>
             <div>
               <h1 className="text-sm font-extrabold text-slate-800 tracking-tight font-display uppercase leading-none">
@@ -865,7 +944,12 @@ export default function App() {
               className="flex flex-col gap-5"
             >
               {/* Dynamic Health Stats Grid */}
-              <DashboardStats issues={issues} />
+              <DashboardStats
+                issues={issues}
+                selectedIssueId={selectedIssueId}
+                onSelectIssue={handleInspectIssueFromHotspot}
+                rightSlot={civicIncidentFilters}
+              />
 
               {/* DUAL PANELS: Map grid on left, Incident Feed list on right */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
@@ -906,82 +990,6 @@ export default function App() {
                   id="incident-inspection-feed"
                   className="flex flex-col gap-3"
                 >
-                  {/* FILTERS AND SEARCH BOX */}
-                  <div className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex flex-col gap-3">
-                    <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
-                      Filter Civic Incidents
-                    </h3>
-
-                    {/* Text search query */}
-                    <div className="relative">
-                      <Search className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-slate-400" />
-                      <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search potholes, streets, tags..."
-                        className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                        id="search-input-box"
-                      />
-                      {searchQuery && (
-                        <button
-                          onClick={() => setSearchQuery("")}
-                          className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2">
-                      {/* Category select filter */}
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[9px] font-bold text-slate-400 uppercase font-mono">
-                          Category
-                        </span>
-                        <select
-                          value={categoryFilter}
-                          onChange={(e) => setCategoryFilter(e.target.value)}
-                          className="px-2 py-1 text-xs bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium"
-                          id="category-filter-select"
-                        >
-                          <option value="All">All Categories</option>
-                          <option value="Pothole">Potholes</option>
-                          <option value="Water Leakage">Water Leakages</option>
-                          <option value="Damaged Streetlight">
-                            Streetlights
-                          </option>
-                          <option value="Waste Management">
-                            Waste Management
-                          </option>
-                          <option value="Public Infrastructure">
-                            Infrastructure
-                          </option>
-                          <option value="Other">Other</option>
-                        </select>
-                      </div>
-
-                      {/* Status select filter */}
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[9px] font-bold text-slate-400 uppercase font-mono">
-                          Civic Status
-                        </span>
-                        <select
-                          value={statusFilter}
-                          onChange={(e) => setStatusFilter(e.target.value)}
-                          className="px-2 py-1 text-xs bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium"
-                          id="status-filter-select"
-                        >
-                          <option value="All">All Statuses</option>
-                          <option value="Reported">Reported</option>
-                          <option value="Verified">Verified</option>
-                          <option value="In Progress">In Progress</option>
-                          <option value="Resolved">Resolved</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
                   {/* ACTIVE INSPECTOR VIEW OR FILTERED FEED LIST */}
                   {selectedIssue ? (
                     <div className="flex flex-col gap-3 animate-fade-in">

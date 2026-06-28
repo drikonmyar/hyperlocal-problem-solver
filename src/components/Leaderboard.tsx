@@ -13,7 +13,8 @@ import {
   Star,
   Zap,
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  CircleUserRound
 } from "lucide-react";
 
 interface LeaderboardProps {
@@ -197,8 +198,8 @@ export default function Leaderboard({ citizens, currentUser }: LeaderboardProps)
             </div>
 
             <div className="flex items-center gap-4 bg-indigo-50/30 p-3 rounded-xl border border-indigo-100/50">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-extrabold flex items-center justify-center text-lg shadow-md shrink-0 font-mono">
-                Lvl {getLevel(currentUser.xp)}
+              <div className="text-indigo-600 shrink-0">
+                <CircleUserRound className="w-9 h-9" />
               </div>
 
               <div className="flex-grow">
