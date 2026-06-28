@@ -86,7 +86,7 @@ export default function App() {
   >(null);
 
   const locateCurrentUser = useCallback(
-    () =>
+    (shouldSetCenter = true) =>
       new Promise<LocationCoordinates | null>((resolve) => {
         if (!navigator.geolocation) {
           setHasGeo(false);
@@ -102,10 +102,12 @@ export default function App() {
               address: `GPS Location (${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)})`,
             };
             setCurrentLocation(userCoords);
-            setMapCenter({
-              lat: userCoords.lat,
-              lng: userCoords.lng,
-            });
+            if (shouldSetCenter) {
+              setMapCenter({
+                lat: userCoords.lat,
+                lng: userCoords.lng,
+              });
+            }
             setHasGeo(true);
             resolve(userCoords);
           },
@@ -1152,37 +1154,27 @@ export default function App() {
                 </div>
               ) : (
                 <>
-                  {/* GIS map location picker assistance */}
-                  <div className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex flex-col gap-2">
-                    <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider font-mono flex items-center gap-1.5">
-                      <Map className="w-4 h-4 text-indigo-600" />
-                      Optional: Pick Location Coordinates on Map
-                    </h3>
-                    <p className="text-[11px] text-slate-500">
-                      Enable placement mode and click any coordinate on our
-                      custom neighborhood map below to auto-fill the address and
-                      exact coordinate variables in the form.
-                    </p>
-
-                    <IssueMap
-                      issues={issues}
-                      selectedCategory="All"
-                      selectedStatus="All"
-                      centerLocation={mapCenter}
-                      currentLocation={currentLocation}
-                      onLocateCurrent={locateCurrentUser}
-                      onSelectIssue={() => {}}
-                      interactiveMode={true}
-                      onSelectLocation={(coords) => setMapPinnedCoords(coords)}
-                      pinnedLocation={mapPinnedCoords}
-                    />
-                  </div>
-
-                  {/* Form card */}
                   <IssueForm
                     onAddIssue={handleAddNewIssue}
                     selectedMapCoords={mapPinnedCoords}
                     onClearMapCoords={() => setMapPinnedCoords(null)}
+                    mapElement={
+                      <IssueMap
+                        issues={issues}
+                        selectedCategory="All"
+                        selectedStatus="All"
+                        centerLocation={mapCenter}
+                        currentLocation={currentLocation}
+                        onLocateCurrent={locateCurrentUser}
+                        onSelectIssue={() => {}}
+                        interactiveMode={true}
+                        onSelectLocation={(coords) =>
+                          setMapPinnedCoords(coords)
+                        }
+                        pinnedLocation={mapPinnedCoords}
+                        className="h-full w-full"
+                      />
+                    }
                   />
                 </>
               )}

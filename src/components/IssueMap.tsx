@@ -32,8 +32,11 @@ interface IssueMapProps {
   pinnedLocation?: LocationCoordinates | null;
   centerLocation?: Pick<LocationCoordinates, "lat" | "lng"> | null;
   currentLocation?: LocationCoordinates | null;
-  onLocateCurrent?: () => Promise<LocationCoordinates | null>;
+  onLocateCurrent?: (
+    shouldSetCenter?: boolean,
+  ) => Promise<LocationCoordinates | null>;
   routeData?: { lat: number; lng: number }[] | null;
+  className?: string;
 }
 
 function MapEvents({
@@ -103,7 +106,9 @@ function LocateControl({
   onLocateCurrent,
 }: {
   currentLocation?: LocationCoordinates | null;
-  onLocateCurrent?: () => Promise<LocationCoordinates | null>;
+  onLocateCurrent?: (
+    shouldSetCenter?: boolean,
+  ) => Promise<LocationCoordinates | null>;
 }) {
   const map = useMap();
 
@@ -132,10 +137,12 @@ function LocateControl({
 
           try {
             const nextLocation = onLocateCurrent
-              ? await onLocateCurrent()
+              ? await onLocateCurrent(false)
               : currentLocation;
             if (nextLocation) {
-              map.setView([nextLocation.lat, nextLocation.lng], 17);
+              map.flyTo([nextLocation.lat, nextLocation.lng], 17, {
+                duration: 1,
+              });
             }
           } finally {
             button.classList.remove("is-locating");
@@ -172,7 +179,13 @@ function UpdateCenter({
       const bounds = L.latLngBounds(routeData.map((p) => [p.lat, p.lng]));
       map.fitBounds(bounds, { padding: [50, 50] });
     } else {
-      map.setView([centerLat, centerLng], map.getZoom());
+      const currentCenter = map.getCenter();
+      if (
+        Math.abs(currentCenter.lat - centerLat) > 0.0001 ||
+        Math.abs(currentCenter.lng - centerLng) > 0.0001
+      ) {
+        map.flyTo([centerLat, centerLng], map.getZoom(), { duration: 1 });
+      }
     }
   }, [centerLat, centerLng, routeData, map]);
   return null;
@@ -191,6 +204,7 @@ export default function IssueMap({
   currentLocation,
   onLocateCurrent,
   routeData,
+  className,
 }: IssueMapProps) {
   // Filter issues
   const filteredIssues = issues.filter((issue) => {
@@ -245,7 +259,7 @@ export default function IssueMap({
   };
 
   return (
-    <div className="relative w-full h-[500px] rounded-xl overflow-hidden border border-slate-200 shadow-inner z-0">
+    <div className={`relative w-full rounded-xl overflow-hidden border border-slate-200 shadow-inner z-0 ${className || "h-[500px]"}`}>
       <MapContainer
         center={[centerLat, centerLng]}
         zoom={15}
