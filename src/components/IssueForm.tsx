@@ -266,7 +266,7 @@ export default function IssueForm({
 
         <div className="flex flex-col gap-1.5">
           <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">
-            Description of Problem
+            Description of Problem (Optional)
           </label>
           <textarea
             value={description}
