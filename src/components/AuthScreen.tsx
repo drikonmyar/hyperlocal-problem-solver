@@ -32,18 +32,21 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     e.preventDefault();
     setError("");
 
+    const trimmedEmail = email.trim().toLowerCase();
+    const trimmedPassword = password.trim();
+
     if (isLogin) {
       // Find user by email (mocking auth) or fallback to name for backward compatibility with initial data
       const user = citizens.find(
         (c) =>
-          c.email?.toLowerCase() === email.toLowerCase() ||
+          c.email?.toLowerCase().trim() === trimmedEmail ||
           c.name.toLowerCase().replace(" ", ".") + "@civic.com" ===
-            email.toLowerCase(),
+            trimmedEmail,
       );
 
       if (user) {
-        if (password) {
-          if (user.password && user.password === password) {
+        if (trimmedPassword) {
+          if (user.password && user.password === trimmedPassword) {
             onLogin(user);
           } else {
             setError("Incorrect password.");

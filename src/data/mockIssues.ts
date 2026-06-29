@@ -4,6 +4,9 @@ export const INITIAL_CITIZENS: Citizen[] = [
   {
     id: "user-current",
     name: "Alex Rivera",
+    email: "alex@example.com",
+    password: "password123",
+    role: "citizen",
     xp: 650,
     reportedCount: 4,
     verifiedCount: 12,
@@ -27,6 +30,9 @@ export const INITIAL_CITIZENS: Citizen[] = [
   {
     id: "user-2",
     name: "Elena Rostova",
+    email: "elena@example.com",
+    password: "password123",
+    role: "citizen",
     xp: 1200,
     reportedCount: 9,
     verifiedCount: 24,
@@ -57,6 +63,9 @@ export const INITIAL_CITIZENS: Citizen[] = [
   {
     id: "user-3",
     name: "Marcus Vance",
+    email: "admin@city.gov",
+    password: "adminpassword",
+    role: "official",
     xp: 950,
     reportedCount: 6,
     verifiedCount: 18,

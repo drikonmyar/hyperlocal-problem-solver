@@ -168,7 +168,20 @@ export default function App() {
     const savedUser = localStorage.getItem("community_hero_current_user");
 
     if (savedIssues) {
-      setIssues(JSON.parse(savedIssues));
+      let parsedIssues: Issue[] = JSON.parse(savedIssues);
+      
+      // Clean up legacy mock data strings from localStorage
+      parsedIssues = parsedIssues.map((issue) => ({
+        ...issue,
+        location: {
+          ...issue.location,
+          address: issue.location.address
+            .replace(" near District 10", "")
+            .replace(", District 10", "")
+        }
+      }));
+      setIssues(parsedIssues);
+      localStorage.setItem("community_hero_issues", JSON.stringify(parsedIssues));
     } else {
       setIssues(INITIAL_ISSUES);
       localStorage.setItem(
@@ -178,11 +191,43 @@ export default function App() {
     }
 
     if (savedCitizens) {
-      const parsedCitizens = JSON.parse(savedCitizens);
+      let parsedCitizens: Citizen[] = JSON.parse(savedCitizens);
+      
+      // Merge predefined mock citizens credentials into loaded citizens
+      let isStateUpdated = false;
+      parsedCitizens = parsedCitizens.map((c) => {
+        const initial = INITIAL_CITIZENS.find((ic) => ic.id === c.id);
+        if (initial) {
+          if (c.email !== initial.email || c.password !== initial.password) {
+            isStateUpdated = true;
+          }
+          return {
+            ...c,
+            email: initial.email || c.email,
+            password: initial.password || c.password,
+            role: initial.role || c.role,
+          };
+        }
+        return c;
+      });
+
+      INITIAL_CITIZENS.forEach((ic) => {
+        if (!parsedCitizens.find((c) => c.id === ic.id)) {
+          parsedCitizens.push(ic);
+          isStateUpdated = true;
+        }
+      });
+
+      if (isStateUpdated) {
+        localStorage.setItem("community_hero_citizens", JSON.stringify(parsedCitizens));
+      }
+
       setCitizens(parsedCitizens);
       // Retrieve current user if previously logged in
       if (savedUser) {
-        setCurrentUser(JSON.parse(savedUser));
+        const parsedUser = JSON.parse(savedUser);
+        const updatedUser = parsedCitizens.find(c => c.id === parsedUser.id) || parsedUser;
+        setCurrentUser(updatedUser);
       }
     } else {
       setCitizens(INITIAL_CITIZENS);

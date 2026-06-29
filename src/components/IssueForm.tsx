@@ -89,7 +89,7 @@ export default function IssueForm({
         setLat(position.coords.latitude);
         setLng(position.coords.longitude);
         setAddress(
-          `GPS Location (${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}) near District 10`,
+          `GPS Location (${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)})`,
         );
         setGeoStatus("success");
         if (onClearMapCoords) onClearMapCoords();
@@ -106,7 +106,7 @@ export default function IssueForm({
   };
 
   const simulateFallbackGPS = () => {
-    // Generate slightly randomized coordinates within District 10 bounds
+    // Generate slightly randomized coordinates within city bounds
     const latOffset = (Math.random() - 0.5) * 0.007;
     const lngOffset = (Math.random() - 0.5) * 0.01;
     const randomLat = MAP_CENTER.lat + latOffset;
@@ -115,7 +115,7 @@ export default function IssueForm({
     setLat(Math.round(randomLat * 10000) / 10000);
     setLng(Math.round(randomLng * 10000) / 10000);
     setAddress(
-      `${Math.floor(Math.random() * 250 + 10)} Central Boulevard, District 10 (Simulated Geolocation)`,
+      `${Math.floor(Math.random() * 250 + 10)} Central Boulevard (Simulated Geolocation)`,
     );
     setGeoStatus("success");
   };
