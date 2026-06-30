@@ -56,10 +56,6 @@ A detailed walkthrough with screenshots is available here:
 
 [Civic Connect Application Flows & Screenshots](https://docs.google.com/document/d/1xS9BRStbke_qViUthact9ITR8-UuM4Uy7pRGLFtwW58/edit?tab=t.0)
 
-The local DOCX version is also available at:
-
-`docs/Civic_Connect_Submission_Brief.docx`
-
 ## Tech Stack
 
 - React
