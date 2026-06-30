@@ -1,47 +1,175 @@
 # Civic Connect
 
-Civic Connect is a hyperlocal community platform designed to bridge the gap between citizens and municipal authorities. It empowers residents to report, track, and verify civic issues (such as potholes, water leaks, and damaged infrastructure) while enabling city officials to efficiently monitor and resolve them using AI-powered insights.
+Civic Connect is a local civic issue reporting app. It helps residents report neighborhood problems like potholes, water leaks, broken streetlights, waste issues, and damaged public infrastructure.
 
-## Features
+The app also gives city officials a simple way to review reports, start work, and mark issues as resolved.
 
-- **Hyperlocal Issue Reporting**: Citizens can easily log civic issues with their geolocation, descriptions, and categories.
-- **AI-Powered Insights**: Integrates with Google Gemini to automatically categorize issues, assess priority, provide safety advice, and generate predictive insights based on geographic report density.
-- **Community Verification**: Other users can verify reported issues, reducing false reports and helping city officials prioritize effectively.
-- **Gamification & Leaderboards**: Citizens earn XP and badges (e.g., "First Reporter", "Hawk Eye") for active participation, encouraging civic engagement.
-- **Dashboard & Hotspot Tracking**: City officials can view an interactive dashboard, track neighborhood hotspots, and manage the workflow pipeline of civic incidents (Reported → Verified → In Progress → Resolved).
-- **Dual Roles**: Supports both `Citizen` and `Official` accounts for targeted experiences.
+## Live App
 
-## Application Flows and Screenshots
+Deployment URL: https://community-hero-1012287889927.asia-southeast1.run.app
 
-For a detailed walkthrough of the application flows and visual screenshots, please refer to our documentation:
+## What You Can Do
+
+- Report a civic issue with a title, description, category, priority, image, and map location.
+- Use Gemini AI to help fill issue details, category, priority, tags, and safety advice.
+- View all incidents on an interactive map.
+- Click an incident to focus the map on that location.
+- Use "Show route" to see the route to an incident.
+- Verify or dispute reports as a citizen.
+- Add comments to incident discussions.
+- Earn XP and badges for reporting and verifying issues.
+- View citizen ranking in the leaderboard.
+- See category breakdown, civic pipeline status, and neighborhood hotspots.
+- Let officials move issues from reported/verified to in progress and resolved.
+- View AI-generated civic forecasts and risk insights.
+
+## User Roles
+
+### Citizen
+
+Citizens can:
+
+- Register or log in.
+- Raise new civic incidents.
+- Use AI assistance while reporting.
+- Pick an issue location from the map.
+- Verify, dispute, upvote, and comment on incidents.
+- Earn XP and appear on the leaderboard.
+
+### Official
+
+Officials can:
+
+- Register or log in as an official.
+- Review active civic incidents.
+- Start work by adding a work ID and ETA.
+- Resolve issues by adding resolution notes.
+- Help keep the civic pipeline updated.
+
+### Guest
+
+Guests can explore the app, but they need to log in or register before reporting, verifying, or earning XP.
+
+## Screenshots and Flow Document
+
+A detailed walkthrough with screenshots is available here:
+
 [Civic Connect Application Flows & Screenshots](https://docs.google.com/document/d/1xS9BRStbke_qViUthact9ITR8-UuM4Uy7pRGLFtwW58/edit?tab=t.0)
+
+The local DOCX version is also available at:
+
+`docs/Civic_Connect_Submission_Brief.docx`
 
 ## Tech Stack
 
-- **Frontend**: React, TypeScript, Tailwind CSS, Lucide React
-- **Backend/API**: Express (Node.js)
-- **AI Integration**: Google Gemini API
-- **Build Tool**: Vite
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Express
+- Leaflet and React Leaflet
+- Google Gemini API via `@google/genai`
+- LocalStorage for demo app state
 
-## Getting Started
+## Google Technologies Used
 
-1. Set your `GEMINI_API_KEY` in the environment variables.
-2. Install dependencies:
+- Google Gemini for AI issue analysis.
+- Gemini structured JSON output for reliable app data.
+- Gemini-powered predictive civic insights.
+- Google Cloud Run for deployment.
+
+## Run Locally
+
+1. Install dependencies:
+
    ```bash
    npm install
    ```
-3. Run the development server:
+
+2. Create a `.env` file from `.env.example`.
+
+3. Add your Gemini API key:
+
+   ```bash
+   GEMINI_API_KEY="your_api_key_here"
+   ```
+
+4. Start the development server:
+
    ```bash
    npm run dev
    ```
 
-## Pre-configured Test Accounts
+5. Open the app:
 
-You can test the application using the following built-in accounts:
+   ```text
+   http://localhost:3000
+   ```
 
-**Citizens:**
-- Email: `alex@example.com` | Password: `password123`
-- Email: `elena@example.com` | Password: `password123`
+## Build for Production
 
-**City Official:**
-- Email: `admin@city.gov` | Password: `adminpassword` (Note: Officials require a 6-digit Official PIN like `123456` upon login).
+```bash
+npm run build
+```
+
+Start the production server:
+
+```bash
+npm start
+```
+
+## Demo Accounts
+
+You can use these built-in accounts for quick testing.
+
+### Citizens
+
+```text
+Email: alex@example.com
+Password: password123
+```
+
+```text
+Email: elena@example.com
+Password: password123
+```
+
+### City Official
+
+```text
+Email: admin@city.gov
+Password: adminpassword
+```
+
+Official registration uses a 6-digit Official ID PIN, for example:
+
+```text
+123456
+```
+
+## Main App Flow
+
+1. Open the dashboard to view current civic issues.
+2. Use filters to narrow incidents by category or status.
+3. Click a hotspot, map pin, or incident card to inspect details.
+4. Log in or register as a citizen to report an issue.
+5. Add issue details, select a location, and submit the report.
+6. Other citizens can verify, dispute, upvote, or comment.
+7. Officials can start work by adding a work ID and ETA.
+8. Officials can resolve the issue with completion notes.
+9. Citizens can track progress through the map, incident list, leaderboard, and dashboard charts.
+
+## Environment Variables
+
+Common variables:
+
+```bash
+GEMINI_API_KEY="your_gemini_api_key"
+APP_URL="https://community-hero-1012287889927.asia-southeast1.run.app"
+```
+
+For local development, `APP_URL` can be:
+
+```bash
+APP_URL="http://localhost:3000"
+```
