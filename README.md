@@ -67,6 +67,41 @@ A detailed walkthrough with screenshots is available here:
 - Google Gemini API via `@google/genai`
 - LocalStorage for demo app state
 
+## Application Architecture
+
+```mermaid
+flowchart TD
+    User[Citizen / Official / Guest] --> Browser[React Web App]
+
+    Browser --> UI[Dashboard, Map, Report Form, Leaderboard, AI Forecasts]
+    Browser --> LocalStorage[Browser LocalStorage]
+
+    UI --> Map[Leaflet Map]
+    Map --> OSM[OpenStreetMap Tiles]
+    Map --> Route[OSRM Route Service]
+
+    UI --> API[Express API Server]
+    API --> Gemini[Google Gemini API]
+
+    Gemini --> Analyze[Issue Analysis]
+    Gemini --> Forecast[Predictive Civic Insights]
+
+    Analyze --> UI
+    Forecast --> UI
+
+    Browser --> CloudRun[Google Cloud Run Deployment]
+```
+
+### How The Pieces Work Together
+
+- The React app runs in the browser and shows the dashboard, map, forms, leaderboard, and AI forecast screens.
+- LocalStorage keeps demo users, reports, XP, comments, and incident status on the browser.
+- Leaflet displays the map using OpenStreetMap tiles.
+- OSRM provides route data for the "Show route" feature.
+- The Express server handles backend API requests.
+- Gemini helps analyze reports and generate predictive civic insights.
+- The deployed app runs on Google Cloud Run.
+
 ## Google Technologies Used
 
 - Google Gemini for AI issue analysis.
